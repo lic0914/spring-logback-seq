@@ -1,0 +1,54 @@
+<configuration>
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 设置队列的最大容量，默认值为 256 -->
+        <queueSize>512</queueSize>
+        <!-- 设置当队列满时是否丢弃新的日志事件，默认为 false -->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 引用其他的 appender，例如控制台 appender -->
+        <appender-ref ref="GELF" />
+    </appender>
+    <appender name="Console"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>
+                [%white(%d{HH:mm:ss.SSS}) %highlight(%-5level)] [%blue(%t)] %yellow(%C{1}): %msg%n%throwable
+            </Pattern>
+        </encoder>
+    </appender>
+    <appender name="GELF" class="de.siegmar.logbackgelf.GelfUdpAppender">
+        <!--GELF Server-->
+        <graylogHost>127.0.0.1</graylogHost>
+        <graylogPort>12201</graylogPort>
+        <maxChunkSize>508</maxChunkSize>
+        <compressionMethod>GZIP</compressionMethod>
+        <messageIdSupplier class="de.siegmar.logbackgelf.MessageIdSupplier"/>
+        <encoder class="com.leesiper.logseqsample.utils.SeqEncoder">
+            <includeRawMessage>false</includeRawMessage>
+            <includeKeyValues>true</includeKeyValues>
+            <includeMarker>false</includeMarker>
+            <includeMdcData>true</includeMdcData>
+            <includeCallerData>false</includeCallerData>
+            <includeRootCauseData>false</includeRootCauseData>
+            <includeLevelName>false</includeLevelName>
+            <shortMessageLayout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%msg%n</pattern>
+            </shortMessageLayout>
+            <fullMessageLayout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%msg%n</pattern>
+            </fullMessageLayout>
+            <numbersAsString>false</numbersAsString>
+            <!--增加app_name 区分服务-->
+            <staticField>app_name:java-demo</staticField>
+            <!--<staticField>os_arch:${os.arch}</staticField>-->
+            <!--<staticField>os_name:${os.name}</staticField>-->
+            <!--<staticField>os_version:${os.version}</staticField>-->
+        </encoder>
+    </appender>
+
+    <!-- LOG everything at INFO level -->
+    <root level="info">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="Console" />
+    </root>
+
+</configuration>
