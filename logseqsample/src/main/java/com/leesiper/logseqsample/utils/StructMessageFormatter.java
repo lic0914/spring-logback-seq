@@ -39,6 +39,8 @@ public class StructMessageFormatter {
         if (s.charAt(idx) == '=') {
             while (idx >= 0) {
                 idx--;
+                if(idx<0)
+                    break;
                 if (isBorder(s.charAt(idx))) {
                     break;
                 }
